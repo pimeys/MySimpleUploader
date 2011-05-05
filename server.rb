@@ -2,7 +2,6 @@ require 'rubygems'
 require 'sinatra'
 require 'haml'
 require 'sass'
-require 'therubyracer'
 require 'coffee-script'
 
 set :haml, :format => :html5
@@ -12,9 +11,9 @@ get '/' do
 end
 
 get '/stylesheets/application.css' do
-  sass :'stylesheets/application'
+  sass :'sass_sheets/application'
 end
 
 get '/javascripts/application.js' do
-  coffee :'javascripts/application'
+  coffee :'coffeescripts/application'
 end
