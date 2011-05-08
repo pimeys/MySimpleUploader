@@ -9,12 +9,13 @@
     %div#header
       %h1 My Smallish Uploader
     %div#content
-      %form#file_select_form
-        %input{:type => 'file', :id => 'file_upload', :name => 'file_dialog', :text => 'Select File', :size => 30, :onChange => 'this.form.local_path.value = this.value'}
+      %form#file_upload_form{:method => 'post', :enctype => 'multipart/form-data', :action => '/'}
+        %input{:name => 'file', :id => 'file_input', :size => '27', :type => 'file'}
         %input{:type => 'hidden', :name => 'remote_path'}
         %div#upload_progress
           %span Status 420%
           %a{:href => '#'} Uploaded to here.
         %br
         %textarea{:rows => 5, :cols => 30}
-
+        %input{:type => 'submit', :name => 'action', :value => 'Upload'}
+        %iframe#upload_target{:name => 'upload_target', :src => ''}

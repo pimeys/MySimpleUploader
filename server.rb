@@ -12,8 +12,14 @@ get '/' do
 end
 
 post '/' do
-  content_type :json
-  { :everything => 'ok' }.to_json
+  if params[:file][:tempfile] && params[:file][:filename]
+    tmpfile = params[:file][:tempfile]
+    name = params[:file][:filename]
+    File.copy(tmpfile.path, "uploads/#{name}")
+    return {}.to_json
+  else
+    return {:error => 'No file selected'}.to_json
+  end
 end
 
 get '/status/:filename' do
@@ -24,6 +30,3 @@ get '/stylesheets/application.css' do
   sass :'sass_sheets/application'
 end
 
-get '/javascripts/application.js' do
-  coffee :'coffeescripts/application'
-end
