@@ -15,7 +15,13 @@ post '/' do
   if params[:file][:tempfile] && params[:file][:filename]
     tmpfile = params[:file][:tempfile]
     name = params[:file][:filename]
-    File.copy(tmpfile.path, "uploads/#{name}")
+
+    while block = tmpfile.read(65536)
+      File.open(File.join(Dir.pwd,"public/uploads", name), "wb") do |f| 
+	f.write(tmpfile.read)
+      end
+    end
+    
     return {}.to_json
   else
     return {:error => 'No file selected'}.to_json

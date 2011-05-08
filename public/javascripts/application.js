@@ -16,10 +16,11 @@ file_upload = {
     // File selected
     $(this.file_input).change(function() {
 	$(file_upload.form).attr('target', file_upload.iframe);
+	$(file_upload.form).submit();
     });
   }
 }
 
 $(document).ready(function() {
-  file_upload.initialize("#file_upload")
+  file_upload.initialize()
 });
