@@ -1,0 +1,24 @@
+body {
+  background-color: #999966;
+  color: #221111;
+  margin: 0px;
+  padding: 0px;
+}
+
+#header {
+  width: 100%;
+  color: #999966;
+  background-color: #221111;
+  margin: 0px 0px 20px 0px;
+  padding: 5px;
+}
+
+#content {
+  padding: 20px;
+}
+
+#upload_target {
+  width: 0;
+  height: 0;
+  border: 0px solid white;
+}
