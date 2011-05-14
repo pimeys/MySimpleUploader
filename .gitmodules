@@ -4,3 +4,6 @@
 [submodule "lib/multipart-js"]
 	path = lib/multipart-js
 	url = https://github.com/isaacs/multipart-js.git
+[submodule "lib/formidable"]
+	path = lib/formidable
+	url = https://github.com/felixge/node-formidable.git

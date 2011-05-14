@@ -1,6 +1,6 @@
 var sys = require('sys');
 var express = require('express');
-var formidable = require('formidable');
+var formidable = require('./lib/formidable');
 
 var app = express.createServer();
 var pub = __dirname + '/public';
@@ -30,7 +30,6 @@ app.post('/', function(req, res) {
   form.on("progress", function(recvd, total) {
     var status_id = get_param(req.url, 1);
     uploads[status_id] = recvd / total;
-    sys.puts("Received: " + recvd + "/" + total);
   });
 
   form.parse(req, function(err, fields, files) {
