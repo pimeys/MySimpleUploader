@@ -1,8 +1,14 @@
+var sys = require('sys');
 var express = require('express');
-var fs = require('fs');
+var formidable = require('formidable');
+
 var app = express.createServer();
 var pub = __dirname + '/public';
-var multipart = require('./lib/multipart-stack/');
+var uploads = {};
+
+function get_param(str, idx) {
+  return str.split('=')[idx];
+}
 
 app.configure(function () {
   app.use(express.compiler({ src: pub, enable: ['sass'] }))
@@ -19,52 +25,34 @@ app.get('/', function(req, res) {
 });
 
 app.post('/', function(req, res) {
-  var parsed = multipart.parseContentType(req.headers['content-type']);
-  if (parsed.type == 'multipart') {
-    var parser = new multipart.Parser(req, parsed.boundary);
-    var fileName = null;
-    var fileStream = null;
-    var headers = null;
+  var form = new formidable.IncomingForm();
 
-    parser.on('part', function(part) {
-      part.on('headers', function(head) {
-	console.log(head);
-      });
+  form.on("progress", function(recvd, total) {
+    var status_id = get_param(req.url, 1);
+    uploads[status_id] = recvd / total;
+    sys.puts("Received: " + recvd + "/" + total);
+  });
 
-      debugger;
+  form.parse(req, function(err, fields, files) {
+    var status_id = req.headers['content-type'].split('=')[1];
+    delete uploads[status_id];
+    res.writeHead(200, {'Content-Type': 'text/plain'});
+    res.write('received upload:\n\n');
+    res.end(sys.inspect({fields: fields, files: files}));
+  });
+});
 
-      console.log("Started part, name = " + part.name + ", filename = " + part.filename);
-      fileName = "./public/uploads/" + part.filename;
-      fileStream = fs.createWriteStream(fileName);
-
-      fileStream.addListener("error", function(err) {
-	console.log("Got error while writing to file '" + fileName + "': ", err);
-      });
-      
-      fileStream.addListener("drain", function() {
-	req.resume();
-      });
-
-      part.data = function(chunk) {
-	req.pause();
-	console.log("Writing chunk");
-	fileStream.write(chunk, "binary");
-      };
-
-      part.end = function() {
-	fileStream.addListener("drain", function() {
-	  fileStream.end();
-	
-	  console.log("Upload complete!");
-
-	  res.sendHeader(200, { 'Content-Type': 'text/plain' });
-	  res.write("Thank you!");
-	  res.end();
-	  sys.puts("\n=> DONE");
-	});
-      };
-    });
+app.get('/status', function(req, res) {
+  var status_id = get_param(req.url, 1);
+  var progress = 0;
+  if (status_id && uploads[status_id])
+  {
+    progress = uploads[status_id];  
   }
+
+  res.writeHead(200, {'Content-Type': 'text/plain'});
+  res.write(progress.toString());
+  res.end();
 });
 
 app.listen(3000);

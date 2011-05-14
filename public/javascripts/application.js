@@ -3,7 +3,7 @@ helpers = {
     return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
   },
   guid: function() {
-    return s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4()
+    return this.s4() + this.s4() + "-" + this.s4() + "-" + this.s4() + "-" + this.s4() + this.s4() + this.s4()
   }
 }
 
@@ -16,6 +16,7 @@ file_upload = {
     // File selected
     $(this.file_input).change(function() {
 	$(file_upload.form).attr('target', file_upload.iframe);
+	$(file_upload.form).attr('action', '/?id=' + helpers.guid());
 	$(file_upload.form).submit();
     });
   }

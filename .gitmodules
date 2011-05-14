@@ -1,3 +1,6 @@
 [submodule "lib/node-multipart"]
 	path = lib/node-multipart
 	url = https://github.com/TooTallNate/node-multipart-stack.git
+[submodule "lib/multipart-js"]
+	path = lib/multipart-js
+	url = https://github.com/isaacs/multipart-js.git
