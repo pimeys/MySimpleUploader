@@ -1,5 +1,5 @@
 var sys = require('sys');
-var express = require('express');
+var express = require('./lib/express');
 var formidable = require('./lib/formidable');
 
 var app = express.createServer();

@@ -7,3 +7,6 @@
 [submodule "lib/formidable"]
 	path = lib/formidable
 	url = https://github.com/felixge/node-formidable.git
+[submodule "lib/express"]
+	path = lib/express
+	url = https://github.com/visionmedia/express.git
