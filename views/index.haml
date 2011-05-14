@@ -6,9 +6,8 @@
     %script{src: '/javascripts/jquery-1.6.min.js', type: 'text/javascript'}
     %script{src: '/javascripts/application.js', type: 'text/javascript'}
   %body
-    %div#header
-      %h1 My Smallish Uploader
     %div#content
+      %div#title Uploader
       %form#file_upload_form{method: 'post', enctype: 'multipart/form-data', action: '/'}
         %input{type: 'hidden', name: 'upload_id', id: 'upload_id'}
         %input{name: 'file', id: 'file_input', size: '27', type: 'file'}
@@ -16,6 +15,6 @@
           %span#upload_progress Status 420%
           %a{href: '#'} Uploaded to here.
         %br
-        %textarea{rows: 5, cols: 30}
+        %textarea{rows: 5, cols: 30, visibility: 'hidden'}
         %input{type: 'submit', name: 'action', value: 'Upload'}
         %iframe#upload_target{name: 'upload_target', src: ''}

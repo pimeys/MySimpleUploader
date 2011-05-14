@@ -1,8 +1,16 @@
 body {
-  background-color: #999966;
+	background-color: white;
   color: #221111;
   margin: 0px;
   padding: 0px;
+	align: center;
+}
+
+#title {
+	font-size: 32px;
+	font-weight: bold;
+	margin: -30px 0px 0px 0px;
+	text-shadow: black 0px 0px 20px;
 }
 
 #header {
@@ -14,7 +22,15 @@ body {
 }
 
 #content {
-  padding: 20px;
+	border: 1px solid black;
+	background-image: -moz-linear-gradient(top, #fcfcfc, #f7f7f7 3%, #f2f2f2 12%, #d9d9d9 90%, #bfbfbf);
+	background-image: -webkit-gradient(linear, center top, center bottom, from(#fcfcfc), to(#bfbfbf), color-stop(3%, #f7f7f7), color-stop(12%, #f2f2f2), color-stop(90%, #d9d9d9));
+	box-shadow: 0 1px 5px rgba(0,0,0,0.75);
+	width: 300px;
+	padding: 10px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 10%;
 }
 
 #upload_target {
