@@ -1,6 +1,6 @@
 var sys = require('sys');
-var express = require('./lib/express');
-var formidable = require('./lib/formidable');
+var express = require('express');
+var formidable = require('formidable');
 
 var app = express.createServer();
 var pub = __dirname + '/public';
