@@ -34,7 +34,7 @@ app.post('/', function(req, res) {
   });
 
   form.parse(req, function(err, fields, files) {
-    var status_id = req.headers['content-type'].split('=')[1];
+    var status_id = get_param(req.url, 1);
     delete uploads[status_id];
     res.writeHead(200, {'Content-Type': 'text/plain'});
     res.write('received upload:\n\n');
