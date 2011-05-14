@@ -12,8 +12,8 @@
       %form#file_upload_form{method: 'post', enctype: 'multipart/form-data', action: '/'}
         %input{type: 'hidden', name: 'upload_id', id: 'upload_id'}
         %input{name: 'file', id: 'file_input', size: '27', type: 'file'}
-        %div#upload_progress
-          %span Status 420%
+        %div
+          %span#upload_progress Status 420%
           %a{href: '#'} Uploaded to here.
         %br
         %textarea{rows: 5, cols: 30}
