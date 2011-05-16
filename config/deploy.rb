@@ -11,12 +11,12 @@ namespace :vlad do
   
   desc 'Start the app'
   remote_task :start_app, :roles => :app do
-    run "/etc/init.d/express_app #{application} start"
+    run "sudo /etc/init.d/express_app #{application} start"
   end
   
   desc 'Stop the app'
   remote_task :stop_app, :roles => :app do
-    run "/etc/init.d/express_app #{application} stop"
+    run "sudo /etc/init.d/express_app #{application} stop"
   end
   
   desc 'Restart the app'
