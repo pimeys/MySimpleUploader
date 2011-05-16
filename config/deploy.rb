@@ -9,9 +9,10 @@ namespace :vlad do
   set :shared_paths, { }
   set :mkdirs, []
   
-  desc 'Softlink log dir'
-  remote_task :link_log, :roles => :app do
+  desc 'Softlink log and public dirs'
+  remote_task :link_dirs, :roles => :app do
     run "sudo ln -s #{deploy_to}/shared/log #{deploy_to}/current/log"
+    run "sudo ln -s #{deploy_to}/shared/uploads #{deploy_to}/current/public"
   end
 
   desc 'Start the app'
@@ -31,7 +32,7 @@ namespace :vlad do
   
   desc "Full deployment cycle: Update, restart, cleanup"
   remote_task :deploy, :roles => :app do
-    %w(update link_log restart_app cleanup).each do |task|
+    %w(update link_dirs restart_app cleanup).each do |task|
       Rake::Task["vlad:#{task}"].invoke
     end
   end
