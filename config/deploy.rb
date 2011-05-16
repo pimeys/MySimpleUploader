@@ -11,7 +11,7 @@ namespace :vlad do
   
   desc 'Softlink log dir'
   remote_task :link_log, :roles => :app do
-    run "sudo ln -s #{deploy_to}/shared/log/ #{deploy_to}/current/"
+    run "sudo ln -s #{deploy_to}/shared/log #{deploy_to}/current/log"
   end
 
   desc 'Start the app'
