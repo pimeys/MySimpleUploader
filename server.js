@@ -53,4 +53,4 @@ app.get('/status', function(req, res) {
   res.end();
 });
 
-app.listen(3000);
+app.listen(80);
