@@ -1,4 +1,5 @@
 var sys = require('sys');
+var fs = require('fs');
 var express = require('express');
 var formidable = require('formidable');
 
@@ -7,7 +8,7 @@ var pub = __dirname + '/public';
 var uploads = {};
 
 function get_param(str, idx) {
-  return str.split('=')[idx];
+  return str.split('=')[idx].replace(/[\/.$\\*~<>|]/gi, '');
 }
 
 app.configure(function () {
@@ -26,14 +27,13 @@ app.get('/', function(req, res) {
 
 app.post('/', function(req, res) {
   var form = new formidable.IncomingForm();
+  var status_id = get_param(req.url, 1);
 
   form.on("progress", function(recvd, total) {
-    var status_id = get_param(req.url, 1);
     uploads[status_id] = recvd / total;
   });
 
   form.parse(req, function(err, fields, files) {
-    var status_id = get_param(req.url, 1);
     res.writeHead(200, {'Content-Type': 'text/plain'});
     res.write('received upload:\n\n');
     res.end(sys.inspect({fields: fields, files: files}));
