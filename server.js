@@ -7,8 +7,16 @@ var app = express.createServer();
 var pub = __dirname + '/public';
 var uploads = {};
 
-function get_param(str, idx) {
-  return str.split('=')[idx].replace(/[\/.$\\*~<>|]/gi, '');
+function s4() {
+  return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
+}
+
+function upload_id(str, idx) {
+  if (str && idx) {
+    return str.split('=')[idx].replace(/[\/.$\\*~<>|]/gi, '');
+  } else {
+    return s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4();
+  }
 }
 
 app.configure(function () {
@@ -21,13 +29,20 @@ app.configure(function () {
 
 app.register('.haml', require('hamljs'));
 
+app.get('/init', function(req, res) {
+  res.writeHead(200, {'Content-Type': 'text/plain'});
+  res.write(upload_id());
+  res.end();
+});
+
 app.get('/', function(req, res) {
   res.render('index.haml', {layout: false});
 });
 
 app.post('/', function(req, res) {
   var form = new formidable.IncomingForm();
-  var status_id = get_param(req.url, 1);
+  debugger
+  var status_id = upload_id(req.url, 1);
 
   form.on("progress", function(recvd, total) {
     uploads[status_id] = recvd / total;
@@ -41,7 +56,7 @@ app.post('/', function(req, res) {
 });
 
 app.get('/status', function(req, res) {
-  var status_id = get_param(req.url, 1);
+  var status_id = upload_id(req.url, 1);
   var progress = 0;
   if (status_id && uploads[status_id])
   {
