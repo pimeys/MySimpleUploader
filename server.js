@@ -73,7 +73,6 @@ app.post('/', function(req, res) {
 app.get('/status', function(req, res) {
   var progress = 0;
   var status_id = req.session.upload_id;
-  sys.puts(status_id);
 
   if (status_id && uploads[status_id])
   {
