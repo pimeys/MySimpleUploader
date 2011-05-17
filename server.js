@@ -56,14 +56,12 @@ app.get('/', function(req, res) {
 
 app.post('/', function(req, res) {
   var form = new formidable.IncomingForm();
-  console.log(req.session.upload_id);
 
   form.on("progress", function(recvd, total) {
     uploads[req.session.upload_id] = recvd / total;
   });
 
   form.parse(req, function(err, fields, files) {
-    req.session.upload_id = null;
     res.writeHead(200, {'Content-Type': 'text/plain'});
     res.write('received upload:\n\n');
     res.end(sys.inspect({fields: fields, files: files}));
