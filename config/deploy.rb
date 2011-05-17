@@ -13,6 +13,7 @@ namespace :vlad do
   remote_task :link_dirs, :roles => :app do
     run "sudo ln -s #{deploy_to}/shared/log #{deploy_to}/current/log"
     run "sudo ln -s #{deploy_to}/shared/uploads #{deploy_to}/current/public"
+    run "sudo ln -s #{deploy_to}/shared/config/general.json #{deploy_to}/current/config/"
   end
 
   desc 'Start the app'

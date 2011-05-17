@@ -1,3 +1,5 @@
 *.swp
 public/uploads
 config/redis.conf
+db/
+config/general.json
