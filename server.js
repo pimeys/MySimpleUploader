@@ -19,17 +19,8 @@ var app = express.createServer()
 // This should be refactored to Redis
 var uploads = {};
 
-function s4() {
-  return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
-}
-
-// Public functions
-function generate_id() {
-  return s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4();
-}
-
 // New upload code goes here
-var upload_data = require('./lib/upload.js').Data();
+var upload_helper = require('./lib/upload_helper.js');
 
 // Express configuration
 app.configure(function () {
@@ -45,7 +36,7 @@ app.configure(function () {
 app.register('.haml', require('hamljs'));
 
 app.get('/init', function(req, res) {
-  req.session.upload_id = generate_id();
+  req.session.upload_id = upload_helper.generate_id();
   res.writeHead(200, {'Content-Type': 'text/plain'});
   res.end();
 });
