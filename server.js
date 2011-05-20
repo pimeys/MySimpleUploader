@@ -1,6 +1,5 @@
 // Requires
-var sys = require('sys')
-  , fs = require('fs')
+var fs = require('fs')
   , express = require('express')
   , formidable = require('formidable');
 
@@ -24,21 +23,23 @@ app.configure(function () {
   app.use(express.bodyParser()); 
   app.use(express.cookieParser());
 });
-
 app.register('.haml', require('hamljs'));
 
+// Routes
+
+// GET, initialize upload
 app.get('/init', function(req, res) {
   var upload_id = upload.generate_id();
   rclient.set(upload_id, 0);
-  res.writeHead(200, {'Content-Type': 'text/plain'});
-  res.write(upload_id);
-  res.end();
+  upload.respond_id(res, upload_id);
 });
 
+// GET, front page
 app.get('/', function(req, res) {
   res.render('index.haml', {layout: false});
 });
 
+// POST, start upload
 app.post('/', function(req, res) {
   var form = new formidable.IncomingForm();
 
@@ -47,12 +48,24 @@ app.post('/', function(req, res) {
   });
 
   form.parse(req, function(err, fields, files) {
-    res.writeHead(200, {'Content-Type': 'text/plain'});
-    res.write('received upload:\n\n');
-    res.end(sys.inspect({fields: fields, files: files}));
+    var upload_id = upload.parse_id(req.url);
+    rclient.exists(upload_id, function(ex_err, exist) {
+      if (exist) {
+	fs.mkdir('./public/uploads/' + upload_id, '0775', function(err, stats) {
+	  if (err) {
+	    upload.error_invalid_id(res);
+	  } else {
+	    upload.success_file_received(res);
+	  }
+	});
+      } else {
+	upload.error_invalid_id(res);
+      }
+    });
   });
 });
 
+// GET, upload status
 app.get('/status', function(req, res) {
   var upload_id = upload.parse_id(req.url);
   var progress = 0;
@@ -60,16 +73,13 @@ app.get('/status', function(req, res) {
   rclient.exists(upload_id, function(ex_err, exist) {
     if (exist) {
       rclient.get(upload_id, function(get_err, val) {
-	res.writeHead(200, {'Content-Type': 'text/plain'});
-	res.write(val);
-	res.end();
+	upload.respond_progress(res, val);
       });
     } else {
-      res.writeHead(500, {'Content-Type': 'text/plain'});
-      res.write('invalid id');
-      res.end();
+      upload.error_invalid_id(res);
     }
   });
 });
 
+// Start server
 app.listen(80);
