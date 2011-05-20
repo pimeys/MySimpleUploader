@@ -31,6 +31,11 @@ file_upload = {
 	$(file_upload.progress_field).text(percentage + '%');
 	if (percentage < 100) {
 	  file_upload.timer = setTimeout("file_upload.progress_updater()", 1000);
+	} else {
+	  var local_path = $('#file_input').val().split('\\');
+	  var file_name = local_path[local_path.length - 1];
+	  var file_path = '/uploads/' + file_upload.upload_id + '/' + file_name;
+	  $('#link_to_file').attr('href', file_path);
 	}
       }
     });
