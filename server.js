@@ -11,7 +11,7 @@ rclient.select(0);
 var app = express.createServer()
   , pub = __dirname + '/public';
 
-// New upload code goes here
+// Upload helper functions
 var upload = require('./lib/upload_helper.js');
 
 // Express configuration
@@ -43,23 +43,44 @@ app.get('/', function(req, res) {
 app.post('/', function(req, res) {
   var form = new formidable.IncomingForm();
 
+  form.on("error", function(err) {
+    fs.unlinkSync(files.file.path);
+    upload.respond_error(err);
+  });
+
+  form.on("aborted", function() {
+    fs.unlinkSync(files.file.path);
+    upload.respond_error("aborted by user / timeout");
+  });
+
   form.on("progress", function(recvd, total) {
     rclient.set(upload.parse_id(req.url), recvd / total);
   });
 
   form.parse(req, function(err, fields, files) {
     var upload_id = upload.parse_id(req.url);
+    // Upload should exist
     rclient.exists(upload_id, function(ex_err, exist) {
       if (exist) {
-	fs.mkdir('./public/uploads/' + upload_id, '0775', function(err, stats) {
+	var save_dir = './public/uploads/' + upload_id + '/';
+	// Make new directory with id to public/uploads
+	fs.mkdir(save_dir, '0775', function(err, stats) {
 	  if (err) {
-	    upload.error_invalid_id(res);
+	    upload.respond_error_invalid_id(res);
 	  } else {
-	    upload.success_file_received(res);
+	    // Move the file to the upload dir
+	    fs.writeFileSync(save_dir + files.file.name, fs.readFileSync(files.file.path), function(err) {
+	      if (!err) {
+		upload.respond_success_file_received(res);
+	      } else {
+		upload.respond_error(err);
+	      }
+	      fs.unlinkSync(files.file.path);
+	    });
 	  }
 	});
       } else {
-	upload.error_invalid_id(res);
+	upload.respond_error_invalid_id(res);
       }
     });
   });
@@ -76,7 +97,7 @@ app.get('/status', function(req, res) {
 	upload.respond_progress(res, val);
       });
     } else {
-      upload.error_invalid_id(res);
+      upload.respond_error_invalid_id(res);
     }
   });
 });
