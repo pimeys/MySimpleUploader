@@ -16,6 +16,8 @@ file_upload = {
       $.ajax({
 	url: '/init',
 	success: function(data) {
+	  $(file_upload.form).attr('action', '/?id=' + data);
+	  file_upload.upload_id = data;
 	  $(file_upload.form).submit();
 	}
       });
@@ -23,7 +25,7 @@ file_upload = {
   },
   progress_updater: function() {
     $.ajax({
-      url: '/status',
+      url: '/status?id=' + file_upload.upload_id,
       success: function(data) {
 	var percentage = Math.round(parseFloat(data) * 100);
 	$(file_upload.progress_field).text(percentage + '%');

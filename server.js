@@ -16,11 +16,8 @@ rclient.select(0);
 var app = express.createServer()
   , pub = __dirname + '/public';
 
-// This should be refactored to Redis
-var uploads = {};
-
 // New upload code goes here
-var upload_helper = require('./lib/upload_helper.js');
+var upload = require('./lib/upload_helper.js');
 
 // Express configuration
 app.configure(function () {
@@ -36,8 +33,10 @@ app.configure(function () {
 app.register('.haml', require('hamljs'));
 
 app.get('/init', function(req, res) {
-  req.session.upload_id = upload_helper.generate_id();
+  var upload_id = upload.generate_id();
+  rclient.set(upload_id, 0);
   res.writeHead(200, {'Content-Type': 'text/plain'});
+  res.write(upload_id);
   res.end();
 });
 
@@ -49,7 +48,7 @@ app.post('/', function(req, res) {
   var form = new formidable.IncomingForm();
 
   form.on("progress", function(recvd, total) {
-    uploads[req.session.upload_id] = recvd / total;
+    rclient.set(upload.parse_id(req.url), recvd / total);
   });
 
   form.parse(req, function(err, fields, files) {
@@ -60,17 +59,22 @@ app.post('/', function(req, res) {
 });
 
 app.get('/status', function(req, res) {
+  var upload_id = upload.parse_id(req.url);
   var progress = 0;
-  var status_id = req.session.upload_id;
 
-  if (status_id && uploads[status_id])
-  {
-    progress = uploads[status_id];  
-  }
-
-  res.writeHead(200, {'Content-Type': 'text/plain'});
-  res.write(progress.toString());
-  res.end();
+  rclient.exists(upload_id, function(ex_err, exist) {
+    if (exist) {
+      rclient.get(upload_id, function(get_err, val) {
+	res.writeHead(200, {'Content-Type': 'text/plain'});
+	res.write(val);
+	res.end();
+      });
+    } else {
+      res.writeHead(500, {'Content-Type': 'text/plain'});
+      res.write('invalid id');
+      res.end();
+    }
+  });
 });
 
 app.listen(80);
