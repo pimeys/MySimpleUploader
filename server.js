@@ -2,14 +2,10 @@
 var sys = require('sys')
   , fs = require('fs')
   , express = require('express')
-  , formidable = require('formidable')
-  , cjson = require('cjson')
-  , config = cjson.load('./config/general.json');
+  , formidable = require('formidable');
 
 // Redis setup
-var rclient = require('redis-node').createClient()
-  , connect = require('connect')
-  , RedisStore = require('connect-redis');
+var rclient = require('redis-node').createClient();
 rclient.select(0);
 
 // Express config
@@ -27,7 +23,6 @@ app.configure(function () {
   app.use(express.logger());
   app.use(express.bodyParser()); 
   app.use(express.cookieParser());
-  app.use(express.session({ secret: config.session_secret, store: new RedisStore })); 
 });
 
 app.register('.haml', require('hamljs'));
