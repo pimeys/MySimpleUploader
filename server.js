@@ -58,32 +58,32 @@ app.post('/:id', function(req, res) {
     // Upload should exist
     rclient.exists(upload_id, function(ex_err, exist) {
       if (exist) {
-				var pub_dir = '/uploads/' + upload_id + '/';
-				var save_dir = './public' + pub_dir;
-				// Make new directory with id to public/uploads
-				fs.mkdir(save_dir, '0775', function(err, stats) {
-					if (err) {
-						upload.respond_error_invalid_id(res);
-					} else {
-						// Move the file to the upload dir
-						var save_uri = save_dir + files.file.name;
-						var pub_uri = pub_dir + files.file.name;
-						fs.writeFile(save_uri, fs.readFileSync(files.file.path), function(err) {
-							fs.unlinkSync(files.file.path);
-							if (!err) {
-								rclient.hmset(upload_id, {progress: 1, path: pub_uri});
-								upload.respond_ok(res);
-							} else {
-								upload.respond_error(err);
-							}
-						});
-					}
-				});
-			} else {
-				upload.respond_error_invalid_id(res);
-			}
-		});
-	});
+		    var pub_dir = '/uploads/' + upload_id + '/';
+			  var save_dir = './public' + pub_dir;
+        // Make new directory with id to public/uploads
+        fs.mkdir(save_dir, '0775', function(err, stats) {
+          if (err) {
+            upload.respond_error_invalid_id(res);
+          } else {
+            // Move the file to the upload dir
+            var save_uri = save_dir + files.file.name;
+            var pub_uri = pub_dir + files.file.name;
+            fs.writeFile(save_uri, fs.readFileSync(files.file.path), function(err) {
+              fs.unlinkSync(files.file.path);
+              if (!err) {
+                rclient.hmset(upload_id, {progress: 1, path: pub_uri});
+                upload.respond_ok(res);
+              } else {
+                upload.respond_error(err);
+              }
+            });
+          }
+        });
+      } else {
+        upload.respond_error_invalid_id(res);
+      }
+    });
+  });
 });
 
 // GET, upload status
@@ -104,33 +104,33 @@ app.get('/status/:id', function(req, res) {
 
 // POST, set file comment
 app.post('/comment/:id', function(req, res) {
-	var upload_id = req.params.id;
+  var upload_id = req.params.id;
 
-	rclient.exists(upload_id, function(err, exist) {
-		if (exist) {
-			var comment = sanitizer.escape(req.body.comment);
-			rclient.hmset(upload_id, {comment: comment});
-			res.redirect('/u/' + upload_id);
-		} else {
-			upload.respond_error_invalid_id(res);
-		}
-	});
+  rclient.exists(upload_id, function(err, exist) {
+    if (exist) {
+      var comment = sanitizer.escape(req.body.comment);
+      rclient.hmset(upload_id, {comment: comment});
+      res.redirect('/u/' + upload_id);
+    } else {
+      upload.respond_error_invalid_id(res);
+    }
+  });
 });
 
 app.get('/u/:id', function(req, res) {
-	rclient.hmget(req.params.id, "path", "comment", function(err, val) {
-		if (!err) {
-			var params = {
-				file_url: val[0],
-				file_comment: val[1],
-				layout: false
-			};
-			res.render('view.html.ejs', params);
-		} else {
-			res.writeHead(404, {'Content-Type': 'text/plain'});
-			res.end('404: Not found');
-		}
-	});
+  rclient.hmget(req.params.id, "path", "comment", function(err, val) {
+    if (!err) {
+      var params = {
+        file_url: val[0],
+        file_comment: val[1],
+        layout: false
+      };
+      res.render('view.html.ejs', params);
+    } else {
+      res.writeHead(404, {'Content-Type': 'text/plain'});
+      res.end('404: Not found');
+    }
+  });
 });
 
 // Start server
