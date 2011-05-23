@@ -139,5 +139,10 @@ app.get('/u/:id', function(req, res) {
   });
 });
 
+// GET, 404 for everything else
+app.get('*', function(req, res) {
+  upload.respond_404(res);
+});
+
 // Start server
 app.listen(80);
