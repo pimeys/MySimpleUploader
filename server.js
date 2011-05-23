@@ -121,17 +121,20 @@ app.post('/comment/:id', function(req, res) {
 
 // GET, display upload
 app.get('/u/:id', function(req, res) {
-  rclient.hmget(req.params.id, "path", "comment", function(err, val) {
-    if (!err) {
-      var params = {
-        file_url: val[0],
-        file_comment: val[1],
-        layout: false
-      };
-      res.render('view.html.ejs', params);
+  rclient.exists(req.params.id, function(err, exist) {
+    if (exist) {
+      rclient.hmget(req.params.id, "path", "comment", function(err, val) {
+        if (!err) {
+          var params = {
+            file_url: val[0],
+            file_comment: val[1],
+            layout: false
+          };
+          res.render('view.html.ejs', params);
+        }
+      });
     } else {
-      res.writeHead(404, {'Content-Type': 'text/plain'});
-      res.end('404: Not found');
+      upload.respond_404(res);
     }
   });
 });
