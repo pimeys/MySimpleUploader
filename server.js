@@ -4,6 +4,7 @@ var fs = require('fs')
   , formidable = require('formidable')
 	, sanitizer = require('sanitizer')
 	, ejs = require('ejs');
+
 // Redis setup
 var rclient = require('redis-node').createClient();
 rclient.select(0);
@@ -117,6 +118,7 @@ app.post('/comment/:id', function(req, res) {
   });
 });
 
+// GET, display upload
 app.get('/u/:id', function(req, res) {
   rclient.hmget(req.params.id, "path", "comment", function(err, val) {
     if (!err) {
