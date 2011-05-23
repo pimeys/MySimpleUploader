@@ -23,24 +23,18 @@ app.configure(function () {
   app.use(express.bodyParser()); 
   app.use(express.cookieParser());
 });
-app.register('.haml', require('hamljs'));
 
 // Routes
 
 // GET, initialize upload
 app.get('/init', function(req, res) {
   var upload_id = upload.generate_id();
-  rclient.set(upload_id, 0);
+  rclient.hmset(upload_id, {progress: 0});
   upload.respond_id(res, upload_id);
 });
 
-// GET, front page
-app.get('/', function(req, res) {
-  res.render('index.haml', {layout: false});
-});
-
 // POST, start upload
-app.post('/', function(req, res) {
+app.post('/:id', function(req, res) {
   var form = new formidable.IncomingForm();
 
   form.on("error", function(err) {
@@ -54,47 +48,65 @@ app.post('/', function(req, res) {
   });
 
   form.on("progress", function(recvd, total) {
-    rclient.set(upload.parse_id(req.url), recvd / total);
+    rclient.hmset(req.params.id, {progress: recvd / total});
   });
 
   form.parse(req, function(err, fields, files) {
-    var upload_id = upload.parse_id(req.url);
+    var upload_id = req.params.id;
     // Upload should exist
     rclient.exists(upload_id, function(ex_err, exist) {
       if (exist) {
-	var save_dir = './public/uploads/' + upload_id + '/';
-	// Make new directory with id to public/uploads
-	fs.mkdir(save_dir, '0775', function(err, stats) {
-	  if (err) {
-	    upload.respond_error_invalid_id(res);
-	  } else {
-	    // Move the file to the upload dir
-	    fs.writeFileSync(save_dir + files.file.name, fs.readFileSync(files.file.path), function(err) {
-	      if (!err) {
-		upload.respond_success_file_received(res);
-	      } else {
-		upload.respond_error(err);
-	      }
-	      fs.unlinkSync(files.file.path);
-	    });
-	  }
+				var pub_dir = '/uploads/' + upload_id + '/';
+				var save_dir = './public' + pub_dir;
+				// Make new directory with id to public/uploads
+				fs.mkdir(save_dir, '0775', function(err, stats) {
+					if (err) {
+						upload.respond_error_invalid_id(res);
+					} else {
+						// Move the file to the upload dir
+						var save_uri = save_dir + files.file.name;
+						var pub_uri = pub_dir + files.file.name;
+						fs.writeFile(save_uri, fs.readFileSync(files.file.path), function(err) {
+							fs.unlinkSync(files.file.path);
+							if (!err) {
+								rclient.hmset(upload_id, {path: pub_uri});
+								upload.respond_ok(res);
+							} else {
+								upload.respond_error(err);
+							}
+						});
+					}
+				});
+			} else {
+				upload.respond_error_invalid_id(res);
+			}
+		});
 	});
-      } else {
-	upload.respond_error_invalid_id(res);
-      }
-    });
-  });
+});
+
+// PUT, set file title
+app.post('/comment/:id', function(req, res) {
+	var upload_id = req.params.id;
+
+	rclient.exists(upload_id, function(err, exist) {
+		if (exist) {
+			rclient.hmset(upload_id, {comment: req.body.comment});
+			upload.respond_ok(res);
+		} else {
+			upload.respond_error_invalid_id(res);
+		}
+	});
 });
 
 // GET, upload status
-app.get('/status', function(req, res) {
-  var upload_id = upload.parse_id(req.url);
+app.get('/status/:id', function(req, res) {
+  var upload_id = req.params.id;
   var progress = 0;
 
   rclient.exists(upload_id, function(ex_err, exist) {
     if (exist) {
-      rclient.get(upload_id, function(get_err, val) {
-	upload.respond_progress(res, val);
+      rclient.hmget(upload_id, "progress", "path", function(get_err, val) {
+				upload.respond_progress(res, val);
       });
     } else {
       upload.respond_error_invalid_id(res);

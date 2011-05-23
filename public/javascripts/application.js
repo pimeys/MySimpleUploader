@@ -1,42 +1,41 @@
 file_upload = {
-  file_input: '#file_input',
-  form: '#file_upload_form',
-  iframe: 'upload_target',
-  progress_field: '#upload_progress',
   timer: null,
   upload_id: null,
-  // Events
   initialize: function(files) {
-    $(file_upload.form).submit(function(evt) {
+    $('#file_upload_form').submit(function(evt) {
       file_upload.progress_updater();
     });
-    // File selected
-    $(this.file_input).change(function() {
-      $(file_upload.form).attr('target', file_upload.iframe);
+    $('#file_input').change(function() {
+      $('#file_upload_form').attr('target', 'upload_target');
       $.ajax({
-	url: '/init',
-	success: function(data) {
-	  $(file_upload.form).attr('action', '/?id=' + data);
-	  file_upload.upload_id = data;
-	  $(file_upload.form).submit();
-	}
-      });
+				url: '/init',
+				success: function(data) {
+					$('#file_upload_form').attr('action', '/' + data);
+					file_upload.upload_id = data;
+					$('#file_upload_form').submit();
+					$('#upload_progress').removeClass('hidden');
+					$('#comment_form').removeClass('hidden');
+					$('#file_input').attr('disabled', 'disabled');
+				}
+			});
     });
   },
   progress_updater: function() {
     $.ajax({
-      url: '/status?id=' + file_upload.upload_id,
+      url: '/status/' + file_upload.upload_id,
       success: function(data) {
-	var percentage = Math.round(parseFloat(data) * 100);
-	$(file_upload.progress_field).text(percentage + '%');
-	if (percentage < 100) {
-	  file_upload.timer = setTimeout("file_upload.progress_updater()", 1000);
-	} else {
-	  var local_path = $('#file_input').val().split('\\');
-	  var file_name = local_path[local_path.length - 1];
-	  var file_path = '/uploads/' + file_upload.upload_id + '/' + file_name;
-	  $('#link_to_file').attr('href', file_path);
-	}
+				var percentage = Math.round(parseFloat(data.progress) * 100);
+				$('#upload_progress').text('Status: ' + percentage + '%');
+				if (percentage < 100) {
+					file_upload.timer = setTimeout("file_upload.progress_updater()", 1000);
+				} else {
+					$('#link_to_file').attr('href', data.path);
+					$('#upload_progress').addClass('hidden');
+					$('#upload_progress').text('Status: 0%');
+					$('#link_to_file').removeClass('hidden');
+					$('#submit_comment').removeClass('hidden');
+					$('#comment_form').attr('action', '/comment/' + file_upload.upload_id);
+				}
       }
     });
   }
