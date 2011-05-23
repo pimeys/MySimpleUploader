@@ -1,7 +1,8 @@
 // Requires
 var fs = require('fs')
   , express = require('express')
-  , formidable = require('formidable');
+  , formidable = require('formidable')
+	, sanitizer = require('sanitizer');
 
 // Redis setup
 var rclient = require('redis-node').createClient();
@@ -90,7 +91,8 @@ app.post('/comment/:id', function(req, res) {
 
 	rclient.exists(upload_id, function(err, exist) {
 		if (exist) {
-			rclient.hmset(upload_id, {comment: req.body.comment});
+			var comment = sanitizer.escape(req.body.comment);
+			rclient.hmset(upload_id, {comment: comment});
 			upload.respond_ok(res);
 		} else {
 			upload.respond_error_invalid_id(res);
