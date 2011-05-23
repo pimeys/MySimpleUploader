@@ -109,7 +109,8 @@ app.post('/comment/:id', function(req, res) {
 
   rclient.exists(upload_id, function(err, exist) {
     if (exist) {
-      var comment = sanitizer.escape(req.body.comment);
+      var comment = req.body.comment != '' ? sanitizer.escape(req.body.comment) : 'No comment';
+
       rclient.hmset(upload_id, {comment: comment});
       res.redirect('/u/' + upload_id);
     } else {
