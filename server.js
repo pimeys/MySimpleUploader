@@ -2,8 +2,8 @@
 var fs = require('fs')
   , express = require('express')
   , formidable = require('formidable')
-	, sanitizer = require('sanitizer');
-
+	, sanitizer = require('sanitizer')
+	, ejs = require('ejs');
 // Redis setup
 var rclient = require('redis-node').createClient();
 rclient.select(0);
@@ -24,6 +24,7 @@ app.configure(function () {
   app.use(express.bodyParser()); 
   app.use(express.cookieParser());
 });
+app.set('view engine', 'ejs');
 
 // Routes
 
@@ -70,7 +71,7 @@ app.post('/:id', function(req, res) {
 						fs.writeFile(save_uri, fs.readFileSync(files.file.path), function(err) {
 							fs.unlinkSync(files.file.path);
 							if (!err) {
-								rclient.hmset(upload_id, {path: pub_uri});
+								rclient.hmset(upload_id, {progress: 1, path: pub_uri});
 								upload.respond_ok(res);
 							} else {
 								upload.respond_error(err);
@@ -82,21 +83,6 @@ app.post('/:id', function(req, res) {
 				upload.respond_error_invalid_id(res);
 			}
 		});
-	});
-});
-
-// PUT, set file title
-app.post('/comment/:id', function(req, res) {
-	var upload_id = req.params.id;
-
-	rclient.exists(upload_id, function(err, exist) {
-		if (exist) {
-			var comment = sanitizer.escape(req.body.comment);
-			rclient.hmset(upload_id, {comment: comment});
-			upload.respond_ok(res);
-		} else {
-			upload.respond_error_invalid_id(res);
-		}
 	});
 });
 
@@ -114,6 +100,37 @@ app.get('/status/:id', function(req, res) {
       upload.respond_error_invalid_id(res);
     }
   });
+});
+
+// POST, set file comment
+app.post('/comment/:id', function(req, res) {
+	var upload_id = req.params.id;
+
+	rclient.exists(upload_id, function(err, exist) {
+		if (exist) {
+			var comment = sanitizer.escape(req.body.comment);
+			rclient.hmset(upload_id, {comment: comment});
+			res.redirect('/u/' + upload_id);
+		} else {
+			upload.respond_error_invalid_id(res);
+		}
+	});
+});
+
+app.get('/u/:id', function(req, res) {
+	rclient.hmget(req.params.id, "path", "comment", function(err, val) {
+		if (!err) {
+			var params = {
+				file_url: val[0],
+				file_comment: val[1],
+				layout: false
+			};
+			res.render('view.html.ejs', params);
+		} else {
+			res.writeHead(404, {'Content-Type': 'text/plain'});
+			res.end('404: Not found');
+		}
+	});
 });
 
 // Start server
