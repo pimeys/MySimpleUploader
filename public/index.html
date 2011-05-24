@@ -22,9 +22,9 @@ $(document).ready(function() {
       <span id="upload_progress" class="hidden">Status: 0%</span> 
       <a href="#" id="link_to_file" class="hidden">Uploaded to here</a>
     </form>
-    <form id="comment_form" method="post" class="hidden">
-      <textarea cols=39 rows=15 name="comment"></textarea>
-      <input type="submit" value="Save" id="submit_comment" class="hidden"/>
+    <form id="comment_form" method="post" class="hidden" action="/comment">
+      <textarea cols="35" rows="15" name="comment"></textarea>
+      <input type="submit" value="Save" id="submit_comment" class="hidden" />
     </form>
   </div>
 </body>
