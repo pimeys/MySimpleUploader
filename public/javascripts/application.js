@@ -1,8 +1,9 @@
 file_upload = {
   upload_id: null,
+  timer: null,
   initialize: function(files) {
     $('#file_upload_form').submit(function() {
-      progress_updater();
+      file_upload.timer = setInterval(function() { progress_updater(); }, 1500);
     });
     $('#file_input').change(function() {
       initialize_and_start_upload();
@@ -28,17 +29,15 @@ function initialize_and_start_upload(data) {
 function progress_updater() {
   var upload_status = get_upload_status(file_upload.upload_id);
   var percentage = Math.round(parseFloat(upload_status.progress) * 100);
-  console.log(upload_status);
-
   if (percentage < 100) {
     $('#upload_progress').text('Status: ' + percentage + '%');
-    setTimeout("progress_updater()", 1000);
   } else {
     upload_ready(upload_status);
   }
 }
 
 function upload_ready(upload_status) {
+  clearInterval(file_upload.timer);
   $('#link_to_file').attr('href', upload_status.path);
   $('#upload_progress').addClass('hidden');
   $('#upload_progress').text('Status: 0%');

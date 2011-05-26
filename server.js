@@ -59,8 +59,8 @@ app.post('/:id', function(req, res) {
     // Upload should exist
     rclient.exists(upload_id, function(ex_err, exist) {
       if (exist) {
-		    var pub_dir = '/uploads/' + upload_id + '/';
-			  var save_dir = './public' + pub_dir;
+	var pub_dir = '/uploads/' + upload_id + '/';
+	var save_dir = './public' + pub_dir;
         // Make new directory with id to public/uploads
         fs.mkdir(save_dir, '0775', function(err, stats) {
           if (err) {
@@ -95,7 +95,7 @@ app.get('/status/:id', function(req, res) {
   rclient.exists(upload_id, function(ex_err, exist) {
     if (exist) {
       rclient.hmget(upload_id, "progress", "path", function(get_err, val) {
-				upload.respond_progress(res, val);
+	upload.respond_progress(res, val);
       });
     } else {
       upload.respond_error_invalid_id(res);
