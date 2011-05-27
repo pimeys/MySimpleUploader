@@ -8,6 +8,9 @@ file_upload = {
     $('#file_input').change(function() {
       initialize_and_start_upload();
     });
+    $('#comment_form').submit(function() {
+      $(this)[0].reset();
+    });
   }
 }
 
@@ -46,6 +49,7 @@ function upload_ready(upload_status) {
   $('#link_to_file').removeClass('hidden');
   $('#submit_comment').removeClass('hidden');
   $('#comment_form').attr('action', '/comment/' + file_upload.upload_id);
+  $('#file_upload_form')[0].reset();
 }
 
 function get_upload_status(id) {
