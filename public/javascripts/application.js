@@ -54,6 +54,7 @@ function get_upload_status(id) {
   $.ajax({
     url: '/status/' + id,
     async: false,
+    cache: false,
     success: function(data) {
       upload_status = data;
     }
