@@ -31,6 +31,8 @@ function progress_updater() {
   var percentage = Math.round(parseFloat(upload_status.progress) * 100);
   if (percentage < 100) {
     $('#upload_progress').text('Status: ' + percentage + '%');
+  } else if (percentage == 100 && !upload_status.path) {
+    $('#upload_progress').text('Status: finalizing...');
   } else {
     upload_ready(upload_status);
   }
