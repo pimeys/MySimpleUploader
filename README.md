@@ -5,23 +5,25 @@ This project is my deep dive into one of the strangest problems in web: the
 multipart upload. Yes, you can send file with every browser, but there's no
 unified API for getting the file progress or sending the file with AJAX.
 
-So we need to monitor the progress in server side. That's another problem
+We need to monitor the progress in the server side. There's another problem
 field: web servers have a tendency to cache the upload before they send the
 request for application, so if you don't want to tie yourself to a specific
-server (nginx or apache) using upload progress modules, you have to think
-some other approach.
+server (nginx or apache) using upload progress modules, you have to think some
+other approach.
+
+The client side is also quite problematic. You can't use regular AJAX requests,
+but you can fake it using a hidden iframe.
 
 Node.js
 -------
 
-So I decided I should not use any web server, only a library serving HTTP
+I decided I should not use any web server, only a library serving HTTP
 requests for clients. I also needed an event based service, so I could
-start only one process and handle all the requests with it. So this was
+start only one process and handle all the requests with it. This was
 a job for Node.js, which has grown into a valid option for simple tasks
 like this. :)
 
-So node gets the request and I'll get a stream from the upload request.
-Node.js uses javascript so there's a great support for events and it's 
+Node.js uses JavaScript so there's a great support for events and it's 
 quite easy to monitor the progress when getting the request.
 
 Serverside libraries:
