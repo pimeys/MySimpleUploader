@@ -55,12 +55,10 @@ app.post('/:id', function(req, res) {
   var form = new formidable.IncomingForm();
 
   form.on("error", function(err) {
-    upload.rm_tmp_file(files.file.path);
     response.error(res, err);
   });
 
   form.on("aborted", function() {
-    upload.rm_tmp_file(files.file.path);
     response.error(res, "aborted by user / timeout");
   });
 
