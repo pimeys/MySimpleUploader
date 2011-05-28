@@ -47,6 +47,11 @@ app.get('/init', function(req, res) {
 
 // POST, start upload
 app.post('/:id', function(req, res) {
+  if (upload.exists(req.params.id)) {
+    response.error("invalid id");
+    return;
+  }
+
   var form = new formidable.IncomingForm();
 
   form.on("error", function(err) {
