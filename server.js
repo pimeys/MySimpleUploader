@@ -7,8 +7,23 @@ var ejs = require('ejs');
 var app = express.createServer();
 var pub = __dirname + '/public';
 
+// Hoptoad error notifier
+var hoptoad = require('hoptoad-notifier').Hoptoad;
+process.addListener('uncaughtException', function(error) {
+  // Optionally provide a callback.
+  Hoptoad.notify(error, function(err) {
+    if (err) {
+      throw err;
+    } else {
+      console.log('Error sent to Hoptoad.');
+    }
+  });
+});
+
 // Upload functions
 var upload = require('./lib/upload.js');
+
+// Responses
 var response = require('./lib/response.js');
 
 // Express configuration
