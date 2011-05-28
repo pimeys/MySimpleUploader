@@ -2,7 +2,6 @@
 var fs = require('fs')
   , express = require('express')
   , formidable = require('formidable')
-	, sanitizer = require('sanitizer')
 	, ejs = require('ejs');
 
 // redis setup
@@ -78,16 +77,11 @@ app.get('/status/:id', function(req, res) {
 
 // POST, set file comment
 app.post('/comment/:id', function(req, res) {
-  var upload_id = req.params.id;
-
-  rclient.exists(upload_id, function(err, exist) {
-    if (exist) {
-      var comment = req.body.comment != '' ? sanitizer.escape(req.body.comment) : 'No comment';
-
-      rclient.hmset(upload_id, {comment: comment});
-      res.redirect('/u/' + upload_id);
+  upload.insert_comment(req, function(err) {
+    if (err) {
+      upload.respond_error(err);
     } else {
-      upload.respond_error_invalid_id(res);
+      res.redirect('/u/' + req.params.id);
     }
   });
 });
