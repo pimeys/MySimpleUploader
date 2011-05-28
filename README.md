@@ -5,10 +5,10 @@ This project is my deep dive into one of the strangest problems in web: the
 multipart upload. Yes, you can send a file with every browser, but there's no
 unified API for getting the file progress or sending the file with AJAX.
 
-We need to monitor the progress in the server side. There's another problem
-field: web servers have a tendency to cache the upload before they send the
-request for application, so if you don't want to tie yourself to a specific
-server using upload progress modules, you have to think some other approach.
+We need to monitor the progress in the server side. There's another problem:
+web servers have a tendency to cache the upload before they send the request
+for application, so if you don't want to tie yourself to a specific server
+using upload progress modules, you have to think some other approach.
 
 The client side is also quite problematic. You can't use regular AJAX requests,
 but you can fake it using a hidden iframe.
