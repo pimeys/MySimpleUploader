@@ -8,9 +8,6 @@ file_upload = {
     $('#file_input').change(function() {
       initialize_and_start_upload();
     });
-    $('#comment_form').submit(function() {
-      $(this)[0].reset();
-    });
   }
 }
 

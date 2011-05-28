@@ -5,7 +5,7 @@ var fs = require('fs')
 	, sanitizer = require('sanitizer')
 	, ejs = require('ejs');
 
-// Redis setup
+// redis setup
 var rclient = require('redis-node').createClient();
 rclient.select(0);
 
@@ -55,33 +55,11 @@ app.post('/:id', function(req, res) {
   });
 
   form.parse(req, function(err, fields, files) {
-    var upload_id = req.params.id;
-    // Upload should exist
-    rclient.exists(upload_id, function(ex_err, exist) {
-      if (exist) {
-	var pub_dir = '/uploads/' + upload_id + '/';
-	var save_dir = './public' + pub_dir;
-        // Make new directory with id to public/uploads
-        fs.mkdir(save_dir, '0775', function(err, stats) {
-          if (err) {
-            upload.respond_error_invalid_id(res);
-          } else {
-            // Move the file to the upload dir
-            var save_uri = save_dir + files.file.name;
-            var pub_uri = pub_dir + files.file.name;
-            fs.writeFile(save_uri, fs.readFileSync(files.file.path), function(err) {
-              fs.unlinkSync(files.file.path);
-              if (!err) {
-                rclient.hmset(upload_id, {progress: 1, path: pub_uri});
-                upload.respond_ok(res);
-              } else {
-                upload.respond_error(err);
-              }
-            });
-          }
-        });
+    upload.publish_upload(req, files, function(err) {
+      if (err) {
+        upload.respond_error(err);
       } else {
-        upload.respond_error_invalid_id(res);
+        upload.respond_ok(res);
       }
     });
   });
@@ -95,7 +73,7 @@ app.get('/status/:id', function(req, res) {
   rclient.exists(upload_id, function(ex_err, exist) {
     if (exist) {
       rclient.hmget(upload_id, "progress", "path", function(get_err, val) {
-	upload.respond_progress(res, val);
+      upload.respond_progress(res, val);
       });
     } else {
       upload.respond_error_invalid_id(res);
