@@ -26,19 +26,19 @@ quite easy to monitor the progress when getting the request.
 
 Serverside libraries:
 
-* [Express][http://expressjs.com/] Sinatra inspired web development framework for node.js
-* [Formidable][https://github.com/aheckmann/node-formidable] A node.js module for parsing form data, especially file uploads
-* [EJS][https://github.com/visionmedia/ejs] Embedded JavaScript templates for node - Express compliant
-* [Sanitizer][https://github.com/theSmaw/Caja-HTML-Sanitizer] Sanitizes comments
-* [Hoptoad Notifier][https://github.com/felixge/node-hoptoad-notifier] Report exceptions to Hoptoad from node.js
+* [Express]( http://expressjs.com/ ) Sinatra inspired web development framework for node.js
+* [Formidable]( https://github.com/aheckmann/node-formidable ) A node.js module for parsing form data, especially file uploads
+* [EJS]( https://github.com/visionmedia/ejs ) Embedded JavaScript templates for node - Express compliant
+* [Sanitizer]( https://github.com/theSmaw/Caja-HTML-Sanitizer ) Sanitizes comments
+* [Hoptoad Notifier]( https://github.com/felixge/node-hoptoad-notifier ) Report exceptions to Hoptoad from node.js
 
 Clientside libraries:
 
-* [jQuery][http://jquery.com/] Helps with cross-browser javascript
+* [jQuery]( http://jquery.com/ ) Helps with cross-browser javascript
 
 Deployment:
 
-* [Vlad the Deployer][http://rubyhitsquad.com/Vlad_the_Deployer.html] Do not reinvent the wheel. Rake based Vlad just rocks.
+* [Vlad the Deployer]( http://rubyhitsquad.com/Vlad_the_Deployer.html ) Do not reinvent the wheel. Rake based Vlad just rocks.
 
 Files
 -----
@@ -97,7 +97,7 @@ handling the application start/stop/restart:
     esac
     exit 0
 
-The init script is dependable on [forever][https://github.com/indexzero/forever].
+The init script is dependable on [forever]( https://github.com/indexzero/forever ).
 
 Usage
 -----
