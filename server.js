@@ -36,12 +36,12 @@ app.post('/:id', function(req, res) {
 
   form.on("error", function(err) {
     upload.rm_tmp_file(files.file.path);
-    response.error(err);
+    response.error(res, err);
   });
 
   form.on("aborted", function() {
     upload.rm_tmp_file(files.file.path);
-    response.error("aborted by user / timeout");
+    response.error(res, "aborted by user / timeout");
   });
 
   form.on("progress", function(recvd, total) {
@@ -51,7 +51,7 @@ app.post('/:id', function(req, res) {
   form.parse(req, function(err, fields, files) {
     upload.publish_upload(req, files, function(err) {
       if (err) {
-        response.error(err);
+        response.error(res, err);
       } else {
         response.ok(res);
       }
@@ -63,7 +63,7 @@ app.post('/:id', function(req, res) {
 app.get('/status/:id', function(req, res) {
   upload.info(req.params.id, function(err, info) {
     if (err) {
-      response.error_invalid_id(res);
+      response.error(res, 'invalid_id');
     } else {
       response.progress(res, info);
     }
@@ -74,7 +74,7 @@ app.get('/status/:id', function(req, res) {
 app.post('/comment/:id', function(req, res) {
   upload.insert_comment(req, function(err) {
     if (err) {
-      response.error(err);
+      response.error(res, err);
     } else {
       res.redirect('/u/' + req.params.id);
     }
