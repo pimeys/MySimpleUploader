@@ -41,17 +41,17 @@ app.post('/:id', function(req, res) {
   var form = new formidable.IncomingForm();
 
   form.on("error", function(err) {
-    fs.unlinkSync(files.file.path);
+    upload.rm_tmp_file(files.file.path);
     upload.respond_error(err);
   });
 
   form.on("aborted", function() {
-    fs.unlinkSync(files.file.path);
+    upload.rm_tmp_file(files.file.path);
     upload.respond_error("aborted by user / timeout");
   });
 
   form.on("progress", function(recvd, total) {
-    rclient.hmset(req.params.id, {progress: recvd / total});
+    upload.update_progress(req.params.id, {progress: recvd / total})
   });
 
   form.parse(req, function(err, fields, files) {
@@ -67,16 +67,11 @@ app.post('/:id', function(req, res) {
 
 // GET, upload status
 app.get('/status/:id', function(req, res) {
-  var upload_id = req.params.id;
-  var progress = 0;
-
-  rclient.exists(upload_id, function(ex_err, exist) {
-    if (exist) {
-      rclient.hmget(upload_id, "progress", "path", function(get_err, val) {
-      upload.respond_progress(res, val);
-      });
-    } else {
+  upload.info(req.params.id, function(err, info) {
+    if (err) {
       upload.respond_error_invalid_id(res);
+    } else {
+      upload.respond_progress(res, info);
     }
   });
 });
