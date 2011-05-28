@@ -2,14 +2,13 @@ Introduction
 ------------
 
 This project is my deep dive into one of the strangest problems in web: the
-multipart upload. Yes, you can send file with every browser, but there's no
+multipart upload. Yes, you can send a file with every browser, but there's no
 unified API for getting the file progress or sending the file with AJAX.
 
 We need to monitor the progress in the server side. There's another problem
 field: web servers have a tendency to cache the upload before they send the
 request for application, so if you don't want to tie yourself to a specific
-server (nginx or apache) using upload progress modules, you have to think some
-other approach.
+server using upload progress modules, you have to think some other approach.
 
 The client side is also quite problematic. You can't use regular AJAX requests,
 but you can fake it using a hidden iframe.
@@ -17,11 +16,12 @@ but you can fake it using a hidden iframe.
 Node.js
 -------
 
-I decided I should not use any web server, only a library serving HTTP
-requests for clients. I also needed an event based service, so I could
-start only one process and handle all the requests with it. This was
-a job for Node.js, which has grown into a valid option for simple tasks
-like this. :)
+This was a job for Node.js, which has grown into a valid option for simple
+tasks like this. :)
+
+I decided I should only use Node.js serving HTTP for clients. I also needed an
+event based server so I could start only one process and handle all the
+requests with it. 
 
 Node.js uses JavaScript so there's a great support for events and it's 
 quite easy to monitor the progress when getting the request.
@@ -64,7 +64,7 @@ Files
     (CSS3)
     │   ├── stylesheets
     │   │   └── application.css
-    (All uploads are saved to here)
+    (All the uploads are saved to here)
     │   └── uploads
     (The main server application)
     ├── server.js
@@ -75,8 +75,9 @@ Files
 Deployment
 ----------
 
-The deployment is handled in the normal Vlad way. You need an init.d script for
-handling the application start/stop/restart:
+The deployment is handled in the normal Vlad way. 
+
+You need an init.d script for handling the application start/stop/restart:
 
     > cat /etc/init.d/express_app 
     #!/bin/bash
@@ -104,11 +105,11 @@ The init script is dependable on [forever]( https://github.com/indexzero/forever
 Usage
 -----
 
-When the application is running, the index page gives a form with a file input
-field. Selecting a file starts the upload and displays a comment textarea and
+When the application is running the index page gives a form with a file input
+field. Selecting a file starts the upload, displays a comment textarea and
 upload status. 
 
-When the upload is done, the progress field changes to a link to the file and
+When the upload is done the progress field changes to a link to the file and
 user can submit the comment. The application creates a permalink which displays
 the comment and link to the file.
 
@@ -118,3 +119,8 @@ Process
 1. Initialize the transfer, server sends back an unique id
 2. Send the file using the given id
 3. (Optional) Add a comment to the file upload using the given id
+
+Browser support
+---------------
+
+Tested on Google Chrome (newest stable), Mozilla Firefox (3.5+) and Internet Explorer (6+).
