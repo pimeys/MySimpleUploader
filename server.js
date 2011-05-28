@@ -1,23 +1,18 @@
 // Requires
-var fs = require('fs')
-  , express = require('express')
-  , formidable = require('formidable')
-	, ejs = require('ejs');
-
-// redis setup
-var rclient = require('redis-node').createClient();
-rclient.select(0);
+var express = require('express');
+var formidable = require('formidable');
+var ejs = require('ejs');
 
 // Express config
-var app = express.createServer()
-  , pub = __dirname + '/public';
+var app = express.createServer();
+var pub = __dirname + '/public';
 
-// Upload helper functions
-var upload = require('./lib/upload_helper.js');
+// Upload functions
+var upload = require('./lib/upload.js');
+var response = require('./lib/response.js');
 
 // Express configuration
 app.configure(function () {
-  app.use(express.compiler({ src: pub, enable: ['sass'] }))
   app.use(express.methodOverride());
   app.use(express.static(pub));
   app.use(express.logger());
@@ -31,7 +26,7 @@ app.set('view engine', 'ejs');
 // GET, initialize upload
 app.get('/init', function(req, res) {
   upload.initialize(function(upload_id) {
-    upload.respond_id(res, upload_id);
+    response.id(res, upload_id);
   });
 });
 
@@ -41,12 +36,12 @@ app.post('/:id', function(req, res) {
 
   form.on("error", function(err) {
     upload.rm_tmp_file(files.file.path);
-    upload.respond_error(err);
+    response.error(err);
   });
 
   form.on("aborted", function() {
     upload.rm_tmp_file(files.file.path);
-    upload.respond_error("aborted by user / timeout");
+    response.error("aborted by user / timeout");
   });
 
   form.on("progress", function(recvd, total) {
@@ -56,9 +51,9 @@ app.post('/:id', function(req, res) {
   form.parse(req, function(err, fields, files) {
     upload.publish_upload(req, files, function(err) {
       if (err) {
-        upload.respond_error(err);
+        response.error(err);
       } else {
-        upload.respond_ok(res);
+        response.ok(res);
       }
     });
   });
@@ -68,9 +63,9 @@ app.post('/:id', function(req, res) {
 app.get('/status/:id', function(req, res) {
   upload.info(req.params.id, function(err, info) {
     if (err) {
-      upload.respond_error_invalid_id(res);
+      response.error_invalid_id(res);
     } else {
-      upload.respond_progress(res, info);
+      response.progress(res, info);
     }
   });
 });
@@ -79,7 +74,7 @@ app.get('/status/:id', function(req, res) {
 app.post('/comment/:id', function(req, res) {
   upload.insert_comment(req, function(err) {
     if (err) {
-      upload.respond_error(err);
+      response.error(err);
     } else {
       res.redirect('/u/' + req.params.id);
     }
@@ -90,7 +85,7 @@ app.post('/comment/:id', function(req, res) {
 app.get('/u/:id', function(req, res) {
   upload.display(req.params.id, function(err, url, comment) {
     if (err) {
-      upload.respond_404(res);
+      response.not_found(res);
     } else {
       var params = {
         file_url: url,
@@ -104,7 +99,7 @@ app.get('/u/:id', function(req, res) {
 
 // GET, 404 for everything else
 app.get('*', function(req, res) {
-  upload.respond_404(res);
+  response.not_found(res);
 });
 
 // Start server
