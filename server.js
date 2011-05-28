@@ -31,9 +31,9 @@ app.set('view engine', 'ejs');
 
 // GET, initialize upload
 app.get('/init', function(req, res) {
-  var upload_id = upload.generate_id();
-  rclient.hmset(upload_id, {progress: 0});
-  upload.respond_id(res, upload_id);
+  upload.initialize(function(upload_id) {
+    upload.respond_id(res, upload_id);
+  });
 });
 
 // POST, start upload
