@@ -51,7 +51,7 @@ function upload_ready(upload_status) {
 };
 
 function get_upload_status(id) {
-  var upload_status = null;
+  var upload_status;
 
   $.ajax({
     url: '/status/' + id,
