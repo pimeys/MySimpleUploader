@@ -91,7 +91,6 @@ You need an init.d script for handling the application start/stop/restart:
     case $2 in
     start)
         cd $dir/current ; $forever_bin start "$srv_file"
-        chown "$user":"$user" "$log_file" ;;
     stop)
         $forever_bin stopall ;;
     *)  
