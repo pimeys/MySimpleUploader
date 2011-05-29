@@ -84,7 +84,6 @@ You need an init.d script for handling the application start/stop/restart:
     user=root
     dir=/var/www/$1/
     srv_file=server.js
-    pid_file=$dir/shared/log/server.pid
     forever_bin=/usr/local/lib/node_modules/npm/node_modules/forever/bin/forever
 
     export HOPTOAD_API_KEY=INSERT_API_KEY_HERE
