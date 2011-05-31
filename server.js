@@ -63,7 +63,7 @@ app.post('/:id', function(req, res) {
   });
 
   form.on("progress", function(recvd, total) {
-    upload.update_progress(req.params.id, {progress: recvd / total})
+    upload.update_progress(req.params.id, {progress: recvd / total});
   });
 
   form.parse(req, function(err, fields, files) {
